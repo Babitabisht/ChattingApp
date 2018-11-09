@@ -16,59 +16,164 @@
         crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
 
-<style>
-body{
+    <style>
+        body{
 
     margin-top: 30px;
     }
 
+
+    #messageArea{
+        display: none;
+
+    }
+
 </style>
-    
+
 </head>
 
 <body>
-    <div class="row">
 
-        <div class="col-md-4">
-            <div class="jumbotron">
-                <h3>Online users</h3>
-                <ul id="users" class="list-group">
+    <div class="container">
 
-                </ul>
+        <div id="userFormArea" class="row">
+
+            <div class="col-md-12">
+                <form id="userForm">
+                    <div class="form-group">
+                        <label for="Enter User name"></label>
+                        <input id="user" class="form-control" />
+
+                        <br>
+
+                        <input type="submit" class="btn btn-primary" value="Login">
+                    </div>
+
+
+                </form>
+
+
+
             </div>
 
 
         </div>
 
-        <div class="col-md-8">
-            <div class="chat" id="chat">
+        <div class="row" id="messageArea">
 
-            </div>
+            <div class="col-md-4">
+                <div class="jumbotron">
+                    <h3>Online users</h3>
+                    <ul id="users" class="list-group">
 
-            <form action="#" id="messageForm">
-                <div class="form-group">
-                    <label for=" Enter message"></label>
-                    <textarea id="message" class="form-control"></textarea> <br>
-                    <input type="submit" class="btn btn-primary"  value="send message">
+                    </ul>
                 </div>
 
 
-            </form>
+            </div>
+
+            <div class="col-md-8">
+                <div class="chat" id="chat">
+
+                </div>
+
+                <form id="messageForm">
+                    <div class="form-group">
+                        <label for="Enter message"></label>
+                        <textarea id="message" class="form-control" value="test">
+
+                            </textarea> <br>
+
+                        <input type="submit" class="btn btn-primary" value="send Message">
+                    </div>
+
+
+                </form>
+
+            </div>
 
         </div>
 
     </div>
 
 
-<script>
 
-$(function(){
-var socket = io.connect();
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+
+    <script>
 
 
-})
+        $(function () {
+            var socket = io.connect();
 
-</script>
+            var $messageForm = $('#messageForm');
+            var $message = $('#message');
+            var $chat = $('#chat');
+
+            var $user = $('#user');
+            var $userForm = $('#userForm');
+            console.log($userForm.val())
+            var $userFormArea = $('#userFormArea');
+
+
+
+
+            $messageForm.submit((e) => {
+
+                e.preventDefault();
+                socket.emit('send message', $message.val());
+                $message.val('');
+            })
+
+            socket.on('new message', (data) => {
+
+                $chat.append('<div class="card jumbotron" >' + data.msg + '</div>')
+
+            })
+
+            $userForm.submit((e) => {
+
+                console.log($user.val())
+
+                e.preventDefault();
+                socket.emit('new user', $user.val(), (data)=>{
+
+                    if(data){
+
+                        $userFormArea.hide();
+                    }
+
+                    $userFormArea.show();
+                });
+                // $user.val('');
+            })
+
+
+
+            socket.on('get users' , (data)=>{
+
+            var html ;
+
+            for(i=0;i<data.length;i++){
+
+                html += '<li  class="list-group-item"> ' +data[i]+'</li>';
+            }
+
+             $user.html(html);
+
+            })
+
+
+
+
+        })
+
+
+
+
+
+    </script>
 
 
 </body>
