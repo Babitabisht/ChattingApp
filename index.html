@@ -26,7 +26,7 @@
     #messageArea{
         display: none;
 
-    }
+    } 
 
 </style>
 
@@ -112,6 +112,7 @@
             var $chat = $('#chat');
 
             var $user = $('#user');
+            var $users = $('#users');
             var $userForm = $('#userForm');
             console.log($userForm.val())
             var $userFormArea = $('#userFormArea');
@@ -127,8 +128,8 @@
             })
 
             socket.on('new message', (data) => {
-
-                $chat.append('<div class="card jumbotron" >' + data.msg + '</div>')
+                    console.log("new message data" + data)
+                $chat.append('<div class="card jumbotron" ><Strong>'+data.user+'</strong >'   + data.msg + '</div>')
 
             })
 
@@ -137,30 +138,36 @@
                 console.log($user.val())
 
                 e.preventDefault();
-                socket.emit('new user', $user.val(), (data)=>{
-
-                    if(data){
+                socket.emit('new user', $user.val(), (data) => {
+                    console.log("data=" + data)
+                    if (data) {
 
                         $userFormArea.hide();
+
+                        $('#messageArea').css('display:block');
+                    } else {
+                        $userFormArea.show();
                     }
 
-                    $userFormArea.show();
+
                 });
                 // $user.val('');
             })
 
 
 
-            socket.on('get users' , (data)=>{
+            socket.on('get users', (data) => {
 
-            var html ;
+                var html = '';
+                console.log(data.length)
 
-            for(i=0;i<data.length;i++){
+                for (i = 0; i < data.length; i++) {
 
-                html += '<li  class="list-group-item"> ' +data[i]+'</li>';
-            }
-
-             $user.html(html);
+                    console.log(data[i])
+                    html += '<li  class="list-group-item"> ' + data[i] + '</li>';
+                }
+                console.log('after for loop' + html)
+                $('#users').html(html);
 
             })
 

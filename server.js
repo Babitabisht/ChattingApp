@@ -41,7 +41,9 @@ updateUsernames();
 //send message
 socket.on('send message',(data)=>{
 console.log(data)
-    io.sockets.emit('new message',{msg:data}  );
+
+console.log('socket user' + socket.user)
+    io.sockets.emit('new message',{msg:data,user:socket.user}  );
    // $message.val('');
 })
 
